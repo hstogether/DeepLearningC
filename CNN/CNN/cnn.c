@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include <random>
+//#include <random>
 #include <time.h>
 #include "cnn.h"
 

@@ -8,7 +8,7 @@ MINST数据库是一个手写图像数据库，里面
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include <random>
+//#include <random>
 #include <time.h>
 
 typedef struct MinstImg{

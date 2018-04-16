@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include <random>
+//#include <random>
 #include <time.h>
 #include "mat.h"
 #include "minst.h"
@@ -13,6 +13,10 @@
 #define AvePool 0
 #define MaxPool 1
 #define MinPool 2
+
+#define bool char
+#define true 1
+#define false 0
 
 // ¾í»ý²ã
 typedef struct convolutional_layer{

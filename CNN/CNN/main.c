@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include <random>
+//#include <random>
 #include <time.h>
 #include "cnn.h"
 #include "minst.h"
@@ -134,10 +134,10 @@ void test_cnn()
 /*Ö÷º¯Êý*/
 int main()
 {
-	LabelArr trainLabel=read_Lable("E:\\Code\\VS2010 code\\CNN\\Minst\\train-labels.idx1-ubyte");
-	ImgArr trainImg=read_Img("E:\\Code\\VS2010 code\\CNN\\Minst\\train-images.idx3-ubyte");
-	LabelArr testLabel=read_Lable("E:\\Code\\VS2010 code\\CNN\\Minst\\test-labels.idx1-ubyte");
-	ImgArr testImg=read_Img("E:\\Code\\VS2010 code\\CNN\\Minst\\test-images.idx3-ubyte");
+	// LabelArr trainLabel=read_Lable("./../Minst/train-labels-idx1-ubyte");
+	// ImgArr trainImg=read_Img("./../Minst/train-images-idx3-ubyte");
+	LabelArr testLabel=read_Lable("./../Minst/t10k-labels-idx1-ubyte");
+	ImgArr testImg=read_Img("./../Minst/t10k-images-idx3-ubyte");
 
 	nSize inputSize={testImg->ImgPtr[0].c,testImg->ImgPtr[0].r};
 	int outSize=testLabel->LabelPtr[0].l;
@@ -170,7 +170,7 @@ int main()
 	int testNum=10000;
 	float incorrectRatio=0.0;
 	incorrectRatio=cnntest(cnn,testImg,testLabel,testNum);
-	printf("test finished!!\n");
+	printf("incorrectRatio=%f\ntest finished!!\n",incorrectRatio);
 
 	return 0;
 }
