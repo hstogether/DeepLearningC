@@ -134,8 +134,6 @@ void test_cnn()
 /*主函数*/
 int main()
 {
-	// LabelArr trainLabel=read_Lable("./../Minst/train-labels-idx1-ubyte");
-	// ImgArr trainImg=read_Img("./../Minst/train-images-idx3-ubyte");
 	LabelArr testLabel=read_Lable("./../Minst/t10k-labels-idx1-ubyte");
 	ImgArr testImg=read_Img("./../Minst/t10k-images-idx3-ubyte");
 
@@ -145,25 +143,6 @@ int main()
 	// CNN结构的初始化
 	CNN* cnn=(CNN*)malloc(sizeof(CNN));
 	cnnsetup(cnn,inputSize,outSize);
-
-	// CNN训练
-	/*
-	CNNOpts opts;
-	opts.numepochs=1;
-	opts.alpha=1.0;
-	int trainNum=55000;
-	cnntrain(cnn,trainImg,trainLabel,opts,trainNum);
-	printf("train finished!!\n");
-	savecnn(cnn,"minst.cnn");
-	// 保存训练误差
-	FILE  *fp=NULL;
-	fp=fopen("E:\\Code\\Matlab\\PicTrans\\cnnL.ma","wb");
-	if(fp==NULL)
-		printf("write file failed\n");
-	fwrite(cnn->L,sizeof(float),trainNum,fp);
-	fclose(fp);
-	*/
-
 
 	// CNN测试
 	importcnn(cnn,"minst.cnn");
