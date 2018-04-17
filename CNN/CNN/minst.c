@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
-#include "minst_rv.h"
+#include "minst.h"
 
 //英特尔处理器和其他低端机用户必须翻转头字节。  
 int ReverseInt(int i)   
@@ -21,11 +21,11 @@ ImgArr read_Img(const char* filename) // 读入图像
 	// assert(fp);
 
         FILE *imfp=NULL;
-        imfp=fopen("filename","rb");
+        imfp=fopen(filename,"rb");
         if(imfp==NULL) printf("open imfile faild\n"); 
 
 	// int magic_number = 0;  
-	// int number_of_images = 0;  
+	int number_of_images = 0;  
 	int n_rows = 28;  
 	int n_cols = 7;  
 	// //从文件中读取sizeof(magic_number) 个字符到 &magic_number  
@@ -42,7 +42,7 @@ ImgArr read_Img(const char* filename) // 读入图像
 	// fread((char*)&n_cols,sizeof(n_cols),1,fp); 
 	// n_cols = ReverseInt(n_cols);  
 	// //获取第i幅图像，保存到vec中 
-	// int i,r,c;
+	int i,r,c;
 
 	// // 图像数组的初始化
 	ImgArr imgarr=(ImgArr)malloc(sizeof(struct MinstImgArr));
@@ -127,57 +127,57 @@ LabelArr read_Lable(const char* filename)// 读入图像
 	return labarr;	
 }
 
-char* intTochar(int i)// 将数字转换成字符串
-{
-	int itemp=i;
-	int w=0;
-	while(itemp>=10){
-		itemp=itemp/10;
-		w++;
-	}
-	char* ptr=(char*)malloc((w+2)*sizeof(char));
-	ptr[w+1]='\0';
-	int r; // 余数
-	while(i>=10){
-		r=i%10;
-		i=i/10;		
-		ptr[w]=(char)(r+48);
-		w--;
-	}
-	ptr[w]=(char)(i+48);
-	return ptr;
-}
-
-char * combine_strings(char *a, char *b) // 将两个字符串相连
-{
-	char *ptr;
-	int lena=strlen(a),lenb=strlen(b);
-	int i,l=0;
-	ptr = (char *)malloc((lena+lenb+1) * sizeof(char));
-	for(i=0;i<lena;i++)
-		ptr[l++]=a[i];
-	for(i=0;i<lenb;i++)
-		ptr[l++]=b[i];
-	ptr[l]='\0';
-	return(ptr);
-}
-
-void save_Img(ImgArr imgarr,char* filedir) // 将图像数据保存成文件
-{
-	int img_number=imgarr->ImgNum;
-
-	int i,r;
-	for(i=0;i<img_number;i++){
-		const char* filename=combine_strings(filedir,combine_strings(intTochar(i),".gray"));
-		FILE  *fp=NULL;
-		fp=fopen(filename,"wb");
-		if(fp==NULL)
-			printf("write file failed\n");
-		assert(fp);
-
-		for(r=0;r<imgarr->ImgPtr[i].r;r++)
-			fwrite(imgarr->ImgPtr[i].ImgData[r],sizeof(float),imgarr->ImgPtr[i].c,fp);
-		
-		fclose(fp);
-	}	
-}
+// char* intTochar(int i)// 将数字转换成字符串
+// {
+// 	int itemp=i;
+// 	int w=0;
+// 	while(itemp>=10){
+// 		itemp=itemp/10;
+// 		w++;
+// 	}
+// 	char* ptr=(char*)malloc((w+2)*sizeof(char));
+// 	ptr[w+1]='\0';
+// 	int r; // 余数
+// 	while(i>=10){
+// 		r=i%10;
+// 		i=i/10;		
+// 		ptr[w]=(char)(r+48);
+// 		w--;
+// 	}
+// 	ptr[w]=(char)(i+48);
+// 	return ptr;
+// }
+// 
+// char * combine_strings(char *a, char *b) // 将两个字符串相连
+// {
+// 	char *ptr;
+// 	int lena=strlen(a),lenb=strlen(b);
+// 	int i,l=0;
+// 	ptr = (char *)malloc((lena+lenb+1) * sizeof(char));
+// 	for(i=0;i<lena;i++)
+// 		ptr[l++]=a[i];
+// 	for(i=0;i<lenb;i++)
+// 		ptr[l++]=b[i];
+// 	ptr[l]='\0';
+// 	return(ptr);
+// }
+// 
+// void save_Img(ImgArr imgarr,char* filedir) // 将图像数据保存成文件
+// {
+// 	int img_number=imgarr->ImgNum;
+// 
+// 	int i,r;
+// 	for(i=0;i<img_number;i++){
+// 		const char* filename=combine_strings(filedir,combine_strings(intTochar(i),".gray"));
+// 		FILE  *fp=NULL;
+// 		fp=fopen(filename,"wb");
+// 		if(fp==NULL)
+// 			printf("write file failed\n");
+// 		assert(fp);
+// 
+// 		for(r=0;r<imgarr->ImgPtr[i].r;r++)
+// 			fwrite(imgarr->ImgPtr[i].ImgData[r],sizeof(float),imgarr->ImgPtr[i].c,fp);
+// 		
+// 		fclose(fp);
+// 	}	
+// }

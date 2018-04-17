@@ -28,6 +28,6 @@ LabelArr read_Lable(const char* filename); // 读入图像标记
 
 ImgArr read_Img(const char* filename); // 读入图像
 
-void save_Img(ImgArr imgarr,char* filedir); // 将图像数据保存成文件
+// void save_Img(ImgArr imgarr,char* filedir); // 将图像数据保存成文件
 
 #endif

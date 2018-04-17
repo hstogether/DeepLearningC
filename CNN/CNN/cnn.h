@@ -94,52 +94,52 @@ typedef struct train_opts{
 	int numepochs; // 训练的迭代次数
 	float alpha; // 学习速率
 }CNNOpts;
-
-void cnnsetup(CNN* cnn,nSize inputSize,int outputSize);
-/*	
-	CNN网络的训练函数
-	inputData，outputData分别存入训练数据
-	dataNum表明数据数目
-*/
-void cnntrain(CNN* cnn,	ImgArr inputData,LabelArr outputData,CNNOpts opts,int trainNum);
-// 测试cnn函数
-float cnntest(CNN* cnn, ImgArr inputData,LabelArr outputData,int testNum);
-// 保存cnn
-void savecnn(CNN* cnn, const char* filename);
-// 导入cnn的数据
-void importcnn(CNN* cnn, const char* filename);
-
-// 初始化卷积层
-CovLayer* initCovLayer(int inputWidth,int inputHeight,int mapSize,int inChannels,int outChannels);
-void CovLayerConnect(CovLayer* covL,bool* connectModel);
-// 初始化采样层
-PoolLayer* initPoolLayer(int inputWidth,int inputHeigh,int mapSize,int inChannels,int outChannels,int poolType);
-void PoolLayerConnect(PoolLayer* poolL,bool* connectModel);
-// 初始化输出层
-OutLayer* initOutLayer(int inputNum,int outputNum);
-
-// 激活函数 input是数据，inputNum说明数据数目，bas表明偏置
-float activation_Sigma(float input,float bas); // sigma激活函数
-
-void cnnff(CNN* cnn,float** inputData); // 网络的前向传播
-void cnnbp(CNN* cnn,float* outputData); // 网络的后向传播
-void cnnapplygrads(CNN* cnn,CNNOpts opts,float** inputData);
-void cnnclear(CNN* cnn); // 将数据vyd清零
-
-/*
-	Pooling Function
-	input 输入数据
-	inputNum 输入数据数目
-	mapSize 求平均的模块区域
-*/
-void avgPooling(float** output,nSize outputSize,float** input,nSize inputSize,int mapSize); // 求平均值
-
-/* 
-	单层全连接神经网络的处理
-	nnSize是网络的大小
-*/
-void nnff(float* output,float* input,float** wdata,float* bas,nSize nnSize); // 单层全连接神经网络的前向传播
-
-void savecnndata(CNN* cnn,const char* filename,float** inputdata); // 保存CNN网络中的相关数据
-
+// 
+// void cnnsetup(CNN* cnn,nSize inputSize,int outputSize);
+// /*	
+// 	CNN网络的训练函数
+// 	inputData，outputData分别存入训练数据
+// 	dataNum表明数据数目
+// */
+// void cnntrain(CNN* cnn,	ImgArr inputData,LabelArr outputData,CNNOpts opts,int trainNum);
+// // 测试cnn函数
+// float cnntest(CNN* cnn, ImgArr inputData,LabelArr outputData,int testNum);
+// // 保存cnn
+// void savecnn(CNN* cnn, const char* filename);
+// // 导入cnn的数据
+// void importcnn(CNN* cnn, const char* filename);
+// 
+// // 初始化卷积层
+// CovLayer* initCovLayer(int inputWidth,int inputHeight,int mapSize,int inChannels,int outChannels);
+// void CovLayerConnect(CovLayer* covL,bool* connectModel);
+// // 初始化采样层
+// PoolLayer* initPoolLayer(int inputWidth,int inputHeigh,int mapSize,int inChannels,int outChannels,int poolType);
+// void PoolLayerConnect(PoolLayer* poolL,bool* connectModel);
+// // 初始化输出层
+// OutLayer* initOutLayer(int inputNum,int outputNum);
+// 
+// // 激活函数 input是数据，inputNum说明数据数目，bas表明偏置
+// float activation_Sigma(float input,float bas); // sigma激活函数
+// 
+// void cnnff(CNN* cnn,float** inputData); // 网络的前向传播
+// void cnnbp(CNN* cnn,float* outputData); // 网络的后向传播
+// void cnnapplygrads(CNN* cnn,CNNOpts opts,float** inputData);
+// void cnnclear(CNN* cnn); // 将数据vyd清零
+// 
+// /*
+// 	Pooling Function
+// 	input 输入数据
+// 	inputNum 输入数据数目
+// 	mapSize 求平均的模块区域
+// */
+// void avgPooling(float** output,nSize outputSize,float** input,nSize inputSize,int mapSize); // 求平均值
+// 
+// /* 
+// 	单层全连接神经网络的处理
+// 	nnSize是网络的大小
+// */
+// void nnff(float* output,float* input,float** wdata,float* bas,nSize nnSize); // 单层全连接神经网络的前向传播
+// 
+// void savecnndata(CNN* cnn,const char* filename,float** inputdata); // 保存CNN网络中的相关数据
+// 
 #endif
