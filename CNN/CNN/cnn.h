@@ -110,7 +110,7 @@ typedef struct train_opts{
 // void importcnn(CNN* cnn, const char* filename);
 // 
 // // 初始化卷积层
-// CovLayer* initCovLayer(int inputWidth,int inputHeight,int mapSize,int inChannels,int outChannels);
+CovLayer* initCovLayer(int inputWidth,int inputHeight,int mapSize,int inChannels,int outChannels);
 // void CovLayerConnect(CovLayer* covL,bool* connectModel);
 // // 初始化采样层
 // PoolLayer* initPoolLayer(int inputWidth,int inputHeigh,int mapSize,int inChannels,int outChannels,int poolType);

@@ -164,19 +164,25 @@
 int test_read_Img()
 {
  	ImgArr testImg=read_Img("./image1.H");
-        int number_of_images=1;
-        int n_rows=28;
-        int n_cols=7;
+        int number_of_images=testImg->ImgNum;
+        int n_rows=testImg->ImgPtr[0].r;
+        int n_cols=testImg->ImgPtr[0].c;
+        int n_cols_h=(n_cols+3)/4;
+        printf("LabelNum=%d\n",number_of_images);
+        printf("n_cols=%d\n",n_cols);
+        printf("n_rows=%d\n",n_rows);
+        printf("n_cols_h=%d\n\n",n_cols_h);
  
         for(int i=0;i<number_of_images;i++){
           for(int r=0;r<n_rows;r++){
-            for(int c=0;c<n_cols;c++){
+            for(int c=0;c<n_cols_h;c++){
               printf("%016lx ",(long)(testImg->ImgPtr[i].ImgData[r][c]));
             }
             printf("\n");
           }
           printf("\n");
         }
+        printf("\n");
  
  	return 0;
 }
@@ -200,7 +206,7 @@ int test_initCovLayer()
   printf("mapSize=%d\n",mapSize);
   printf("inputHeight=%d\n",inputHeight);
   printf("inputHeight=%d\n",inputHeight);
-  printf("n_cols=%d\n",n_cols);
+  printf("n_cols=%d\n\n",n_cols);
 
   int i,j,c,r;
   for(i=0;i<inChannels;i++){
@@ -216,11 +222,13 @@ int test_initCovLayer()
     printf("\n");
   }
   printf("\n");
+
+  return 0;
 }
 
 int main()
 {
   test_read_Img();
-  // test_initCovLayer();
+  test_initCovLayer();
   return 0;
 }

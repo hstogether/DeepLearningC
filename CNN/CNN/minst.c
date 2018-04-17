@@ -69,8 +69,8 @@ ImgArr read_Img(const char* filename) // ∂¡»ÎÕºœÒ
 
          for(i = 0; i < number_of_images; ++i)  
 	 {  
+                imgarr->ImgPtr[i].c=n_cols;
                 imgarr->ImgPtr[i].r=n_rows;
-                imgarr->ImgPtr[i].r=n_cols;
 	 	imgarr->ImgPtr[i].ImgData=(long**)malloc(n_rows*sizeof(long*));
 	 	for(r = 0; r < n_rows; ++r)      
 	 	{
