@@ -27,7 +27,8 @@ ImgArr read_Img(const char* filename) // 读入图像
 	// int magic_number = 0;  
 	int number_of_images = 0;  
 	int n_rows = 28;  
-	int n_cols = 7;  
+	int n_cols = 28;  
+        int n_cols_h= (n_cols+3)/4;
 	// //从文件中读取sizeof(magic_number) 个字符到 &magic_number  
 	// fread((char*)&magic_number,sizeof(magic_number),1,fp); 
 	// magic_number = ReverseInt(magic_number);  
@@ -68,11 +69,13 @@ ImgArr read_Img(const char* filename) // 读入图像
 
          for(i = 0; i < number_of_images; ++i)  
 	 {  
+                imgarr->ImgPtr[i].r=n_rows;
+                imgarr->ImgPtr[i].r=n_cols;
 	 	imgarr->ImgPtr[i].ImgData=(long**)malloc(n_rows*sizeof(long*));
 	 	for(r = 0; r < n_rows; ++r)      
 	 	{
-	 		imgarr->ImgPtr[i].ImgData[r]=(long*)malloc(n_cols*sizeof(long));
-	 		for(c = 0; c < n_cols; ++c)
+	 		imgarr->ImgPtr[i].ImgData[r]=(long*)malloc(n_cols_h*sizeof(long));
+	 		for(c = 0; c < n_cols_h; ++c)
 	 		{ 
 	 			long temp = 0;  
                                 fscanf(imfp, "%lx", &temp);

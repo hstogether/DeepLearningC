@@ -220,7 +220,7 @@ int test_initCovLayer()
 
 int main()
 {
-  // test_read_Img();
-  test_initCovLayer();
+  test_read_Img();
+  // test_initCovLayer();
   return 0;
 }
