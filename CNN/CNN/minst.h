@@ -5,7 +5,7 @@ MINST数据库是一个手写图像数据库，里面
 */
 
 typedef struct MinstImg{
-	long s;           // 图像宽 和 高 [0, 0, c, r]
+	// long s;        // 图像宽 和 高 [0, 0, c, r] default
 	long** ImgData;   // 图像数据二维动态数组
 }MinstImg;
 
