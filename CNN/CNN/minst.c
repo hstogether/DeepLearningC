@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
-#include "minst.h"
+#include "minst_rv.h"
 
 //英特尔处理器和其他低端机用户必须翻转头字节。  
 int ReverseInt(int i)   
