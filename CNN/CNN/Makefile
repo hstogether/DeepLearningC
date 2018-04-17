@@ -12,4 +12,4 @@ mat.o:
 	riscv64-unknown-elf-gcc -c mat.c
 
 clean:
-	rm -rf *.o main
+	rm -rf *.o cnn 
