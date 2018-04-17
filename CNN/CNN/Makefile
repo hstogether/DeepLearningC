@@ -1,15 +1,15 @@
 all:cnn
 
 cnn:main.o cnn.o minst.o mat.o
-	riscv64-unknown-elf-gcc -o cnn main.o cnn.o minst.o mat.o -lm
+	gcc -o cnn main.o cnn.o minst.o mat.o -lm
 main.o:
-	riscv64-unknown-elf-gcc -c main.c
+	gcc -c main.c
 cnn.o:
-	riscv64-unknown-elf-gcc -c cnn.c
+	gcc -c cnn.c
 minst.o:
-	riscv64-unknown-elf-gcc -c minst.c
+	gcc -c minst.c
 mat.o:
-	riscv64-unknown-elf-gcc -c mat.c
+	gcc -c mat.c
 
 clean:
 	rm -rf *.o main

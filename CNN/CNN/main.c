@@ -167,7 +167,8 @@ int main()
 
 	// CNN≤‚ ‘
 	importcnn(cnn,"minst.cnn");
-	int testNum=10000;
+	//int testNum=10000;
+	int testNum=1;
 	float incorrectRatio=0.0;
 	incorrectRatio=cnntest(cnn,testImg,testLabel,testNum);
 	printf("incorrectRatio=%f\ntest finished!!\n",incorrectRatio);
