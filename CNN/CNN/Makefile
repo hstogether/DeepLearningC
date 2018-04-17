@@ -1,7 +1,7 @@
-all:cnn
+all:cnn-hfp
 
-cnn:main.o cnn.o minst.o mat.o
-	riscv64-unknown-elf-gcc -o cnn main.o cnn.o minst.o mat.o -lm
+cnn-hfp:main.o cnn.o minst.o mat.o
+	riscv64-unknown-elf-gcc -o cnn-hfp main.o cnn.o minst.o mat.o -lm
 main.o:
 	riscv64-unknown-elf-gcc -c main.c
 cnn.o:
@@ -12,4 +12,4 @@ mat.o:
 	riscv64-unknown-elf-gcc -c mat.c
 
 clean:
-	rm -rf *.o cnn 
+	rm -rf *.o cnn-hfp
