@@ -75,7 +75,7 @@ ImgArr read_Img(const char* filename) // ∂¡»ÎÕºœÒ
 	 		for(c = 0; c < n_cols; ++c)
 	 		{ 
 	 			long temp = 0;  
-                                fscanf(imfp, "%lX", &temp);
+                                fscanf(imfp, "%lx", &temp);
 	 			imgarr->ImgPtr[i].ImgData[r][c]=(long)temp;
 	 		}  
 	 	}    

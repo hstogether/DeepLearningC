@@ -170,7 +170,7 @@ int test_read_Img()
         for(int i=0;i<number_of_images;i++){
           for(int r=0;r<n_rows;r++){
             for(int c=0;c<n_cols;c++){
-              printf("%lX  ",(long)(testImg->ImgPtr[i].ImgData[r][c]));
+              printf("%016lx ",(long)(testImg->ImgPtr[i].ImgData[r][c]));
             }
             printf("\n");
           }
