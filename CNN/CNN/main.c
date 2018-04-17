@@ -5,6 +5,7 @@
 #include <time.h>
 #include "cnn.h"
 #include "minst.h"
+#include "cnn.h"
 
 // 以下都是测试函数，可以不用管
 // 测试Minst模块是否工作正常
@@ -180,8 +181,46 @@ int test_read_Img()
  	return 0;
 }
 
+int test_initCovLayer()
+{
+  nSize inSize;
+  inSize.c=28;
+  inSize.r=28;
+  CovLayer* covL=initCovLayer(inSize.c,inSize.r,5,1,6);
+
+  int inChannels=covL->inChannels;
+  int outChannels=covL->outChannels;
+  int mapSize=covL->mapSize;
+  int inputHeight=covL->inputHeight;
+  int inputWidth=covL->inputWidth;
+  int n_cols=(mapSize+3)/4;
+
+  printf("inChannels=%d\n",inChannels);
+  printf("outChannels=%d\n",outChannels);
+  printf("mapSize=%d\n",mapSize);
+  printf("inputHeight=%d\n",inputHeight);
+  printf("inputHeight=%d\n",inputHeight);
+  printf("n_cols=%d\n",n_cols);
+
+  int i,j,c,r;
+  for(i=0;i<inChannels;i++){
+    for(j=0;j<outChannels;j++){
+      for(r=0;r<mapSize;r++){
+        for(c=0;c<n_cols;c++){
+          printf("%016lx ",covL->mapData[i][j][r][c]);
+        }
+        printf("\n");
+      }
+      printf("\n");
+    }
+    printf("\n");
+  }
+  printf("\n");
+}
+
 int main()
 {
-  test_read_Img();
+  // test_read_Img();
+  test_initCovLayer();
   return 0;
 }

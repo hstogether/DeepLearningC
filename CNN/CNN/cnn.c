@@ -30,71 +30,75 @@
 // 
 // 	cnn->e=(float*)calloc(cnn->O5->outputNum,sizeof(float));
 // }
-// 
-// CovLayer* initCovLayer(int inputWidth,int inputHeight,int mapSize,int inChannels,int outChannels)
-// {
-// 	CovLayer* covL=(CovLayer*)malloc(sizeof(CovLayer));
-// 
-// 	covL->inputHeight=inputHeight;
-// 	covL->inputWidth=inputWidth;
-// 	covL->mapSize=mapSize;
-// 
-// 	covL->inChannels=inChannels;
-// 	covL->outChannels=outChannels;
-// 
-// 	covL->isFullConnect=true; // 默认为全连接
-// 
-// 	// 权重空间的初始化，先行再列调用，[r][c]
-// 	int i,j,c,r;
-// 	srand((unsigned)time(NULL));
-// 	covL->mapData=(float****)malloc(inChannels*sizeof(float***));
-// 	for(i=0;i<inChannels;i++){
-// 		covL->mapData[i]=(float***)malloc(outChannels*sizeof(float**));
-// 		for(j=0;j<outChannels;j++){
-// 			covL->mapData[i][j]=(float**)malloc(mapSize*sizeof(float*));
-// 			for(r=0;r<mapSize;r++){
-// 				covL->mapData[i][j][r]=(float*)malloc(mapSize*sizeof(float));
-// 				for(c=0;c<mapSize;c++){
-// 					float randnum=(((float)rand()/(float)RAND_MAX)-0.5)*2; 
-// 					covL->mapData[i][j][r][c]=randnum*sqrt((float)6.0/(float)(mapSize*mapSize*(inChannels+outChannels)));
-// 				}
-// 			}
-// 		}
-// 	}
-// 	// 权重梯度变化
-// 	covL->dmapData=(float****)malloc(inChannels*sizeof(float***));
-// 	for(i=0;i<inChannels;i++){
-// 		covL->dmapData[i]=(float***)malloc(outChannels*sizeof(float**));
-// 		for(j=0;j<outChannels;j++){
-// 			covL->dmapData[i][j]=(float**)malloc(mapSize*sizeof(float*));
-// 			for(r=0;r<mapSize;r++){
-// 				covL->dmapData[i][j][r]=(float*)calloc(mapSize,sizeof(float));
-// 			}
-// 		}
-// 	}
-// 
-// 	covL->basicData=(float*)calloc(outChannels,sizeof(float));
-// 
-// 	int outW=inputWidth-mapSize+1;
-// 	int outH=inputHeight-mapSize+1;
-// 
-// 
-// 	covL->d=(float***)malloc(outChannels*sizeof(float**));
-// 	covL->v=(float***)malloc(outChannels*sizeof(float**));
-// 	covL->y=(float***)malloc(outChannels*sizeof(float**));
-// 	for(j=0;j<outChannels;j++){
-// 		covL->d[j]=(float**)malloc(outH*sizeof(float*));
-// 		covL->v[j]=(float**)malloc(outH*sizeof(float*));
-// 		covL->y[j]=(float**)malloc(outH*sizeof(float*));
-// 		for(r=0;r<outH;r++){
-// 			covL->d[j][r]=(float*)calloc(outW,sizeof(float));
-// 			covL->v[j][r]=(float*)calloc(outW,sizeof(float));
-// 			covL->y[j][r]=(float*)calloc(outW,sizeof(float));
-// 		}
-// 	}
-// 
-// 	return covL;
-// }
+ 
+ CovLayer* initCovLayer(int inputWidth,int inputHeight,int mapSize,int inChannels,int outChannels)
+ {
+ 	CovLayer* covL=(CovLayer*)malloc(sizeof(CovLayer));
+ 
+ 	covL->inputHeight=inputHeight;
+ 	covL->inputWidth=inputWidth;
+ 	covL->mapSize=mapSize;
+ 
+ 	covL->inChannels=inChannels;
+ 	covL->outChannels=outChannels;
+ 
+ 	covL->isFullConnect=true; // 默认为全连接
+ 
+        long randum=0x3acc2b118345ba07;
+        int n_cols=(mapSize+3)/4;
+ 	// 权重空间的初始化，先行再列调用，[r][c]
+ 	int i,j,c,r;
+ 	srand((unsigned)time(NULL));
+ 	covL->mapData=(long****)malloc(inChannels*sizeof(long***));
+ 	for(i=0;i<inChannels;i++){
+ 		covL->mapData[i]=(long***)malloc(outChannels*sizeof(long**));
+ 		for(j=0;j<outChannels;j++){
+ 			covL->mapData[i][j]=(long**)malloc(mapSize*sizeof(long*));
+ 			for(r=0;r<mapSize;r++){
+ 				covL->mapData[i][j][r]=(long*)malloc(n_cols*sizeof(long));
+ 				for(c=0;c<n_cols;c++){
+ 					// float randnum=(((float)rand()/(float)RAND_MAX)-0.5)*2; 
+ 					// covL->mapData[i][j][r][c]=randnum*sqrt((float)6.0/(float)(mapSize*mapSize*(inChannels+outChannels)));
+ 					covL->mapData[i][j][r][c]=randum;
+ 				}
+ 			}
+ 		}
+ 	}
+ 	// 权重梯度变化
+ 	covL->dmapData=(long****)malloc(inChannels*sizeof(long***));
+ 	for(i=0;i<inChannels;i++){
+ 		covL->dmapData[i]=(long***)malloc(outChannels*sizeof(long**));
+ 		for(j=0;j<outChannels;j++){
+ 			covL->dmapData[i][j]=(long**)malloc(mapSize*sizeof(long*));
+ 			for(r=0;r<mapSize;r++){
+ 				covL->dmapData[i][j][r]=(long*)calloc(n_cols,sizeof(long));
+ 			}
+ 		}
+ 	}
+ 
+ 	covL->basicData=(float*)calloc(outChannels,sizeof(float));
+ 
+ 	int outW=inputWidth-mapSize+1;
+ 	int outH=inputHeight-mapSize+1;
+        outW=(outW+3)/4;
+ 
+ 
+ 	covL->d=(long***)malloc(outChannels*sizeof(long**));
+ 	covL->v=(long***)malloc(outChannels*sizeof(long**));
+ 	covL->y=(long***)malloc(outChannels*sizeof(long**));
+ 	for(j=0;j<outChannels;j++){
+ 		covL->d[j]=(long**)malloc(outH*sizeof(long*));
+ 		covL->v[j]=(long**)malloc(outH*sizeof(long*));
+ 		covL->y[j]=(long**)malloc(outH*sizeof(long*));
+ 		for(r=0;r<outH;r++){
+ 			covL->d[j][r]=(long*)calloc(outW,sizeof(long));
+ 			covL->v[j][r]=(long*)calloc(outW,sizeof(long));
+ 			covL->y[j][r]=(long*)calloc(outW,sizeof(long));
+ 		}
+ 	}
+ 
+ 	return covL;
+ }
 // 
 // PoolLayer* initPoolLayer(int inputWidth,int inputHeight,int mapSize,int inChannels,int outChannels,int poolType)
 // {

@@ -31,19 +31,19 @@ typedef struct convolutional_layer{
 	// 其大小为inChannels*outChannels*mapSize*mapSize大小
 	// 这里用四维数组，主要是为了表现全连接的形式，实际上卷积层并没有用到全连接的形式
 	// 这里的例子是DeapLearningToolboox里的CNN例子，其用到就是全连接
-	float**** mapData;     //存放特征模块的数据
-	float**** dmapData;    //存放特征模块的数据的局部梯度
+	long**** mapData;     //存放特征模块的数据
+	long**** dmapData;    //存放特征模块的数据的局部梯度
 
 	float* basicData;   //偏置，偏置的大小，为outChannels
 	bool isFullConnect; //是否为全连接
 	bool* connectModel; //连接模式（默认为全连接）
 
 	// 下面三者的大小同输出的维度相同
-	float*** v; // 进入激活函数的输入值
-	float*** y; // 激活函数后神经元的输出
+	long*** v; // 进入激活函数的输入值
+	long*** y; // 激活函数后神经元的输出
 
 	// 输出像素的局部梯度
-	float*** d; // 网络的局部梯度,δ值  
+	long*** d; // 网络的局部梯度,δ值  
 }CovLayer;
 
 // 采样层 pooling
