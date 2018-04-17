@@ -82,7 +82,8 @@ LabelArr read_Lable(const char* filename)// 读入图像
 	magic_number = ReverseInt(magic_number);  
 	//获取训练或测试image的个数number_of_images 
 	fread((char*)&number_of_labels,sizeof(number_of_labels),1,fp);  
-	number_of_labels = ReverseInt(number_of_labels);    
+	// number_of_labels = ReverseInt(number_of_labels);    
+	number_of_labels = 1; // 只测试一张图片    
 
 	int i,l;
 

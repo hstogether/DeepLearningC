@@ -2,209 +2,160 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-//#include <random>
 #include <time.h>
-#include "mat.h"
+#include "cnn.h"
+#include "minst.h"
 
-float** rotate180(float** mat, nSize matSize)// 矩阵翻转180度
-{
-	int i,c,r;
-	int outSizeW=matSize.c;
-	int outSizeH=matSize.r;
-	float** outputData=(float**)malloc(outSizeH*sizeof(float*));
-	for(i=0;i<outSizeH;i++)
-		outputData[i]=(float*)malloc(outSizeW*sizeof(float));
+// 以下都是测试函数，可以不用管
+// 测试Minst模块是否工作正常
 
-	for(r=0;r<outSizeH;r++)
-		for(c=0;c<outSizeW;c++)
-			outputData[r][c]=mat[outSizeH-r-1][outSizeW-c-1];
-
-	return outputData;
+void test_minst(){
+	LabelArr testLabel=read_Lable("E:\\Code\\VS2010 code\\CNN\\Minst\\test-labels.idx1-ubyte");
+	ImgArr testImg=read_Img("E:\\Code\\VS2010 code\\CNN\\Minst\\test-images.idx3-ubyte");
+	save_Img(testImg,"E:\\Code\\VS2010 code\\CNN\\Minst\\testImgs\\");
 }
 
-// 关于卷积和相关操作的输出选项
-// 这里共有三种选择：full、same、valid，分别表示
-// full指完全，操作后结果的大小为inSize+(mapSize-1)
-// same指同输入相同大小
-// valid指完全操作后的大小，一般为inSize-(mapSize-1)大小，其不需要将输入添0扩大。
-
-float** correlation(float** map,nSize mapSize,float** inputData,nSize inSize,int type)// 互相关
-{
-	// 这里的互相关是在后向传播时调用，类似于将Map反转180度再卷积
-	// 为了方便计算，这里先将图像扩充一圈
-	// 这里的卷积要分成两拨，偶数模板同奇数模板
-	int i,j,c,r;
-	int halfmapsizew;
-	int halfmapsizeh;
-	if(mapSize.r%2==0&&mapSize.c%2==0){ // 模板大小为偶数
-		halfmapsizew=(mapSize.c)/2; // 卷积模块的半瓣大小
-		halfmapsizeh=(mapSize.r)/2;
-	}else{
-		halfmapsizew=(mapSize.c-1)/2; // 卷积模块的半瓣大小
-		halfmapsizeh=(mapSize.r-1)/2;
-	}
-
-	// 这里先默认进行full模式的操作，full模式的输出大小为inSize+(mapSize-1)
-	int outSizeW=inSize.c+(mapSize.c-1); // 这里的输出扩大一部分
-	int outSizeH=inSize.r+(mapSize.r-1);
-	float** outputData=(float**)malloc(outSizeH*sizeof(float*)); // 互相关的结果扩大了
-	for(i=0;i<outSizeH;i++)
-		outputData[i]=(float*)calloc(outSizeW,sizeof(float));
-
-	// 为了方便计算，将inputData扩大一圈
-	float** exInputData=matEdgeExpand(inputData,inSize,mapSize.c-1,mapSize.r-1);
-
-	for(j=0;j<outSizeH;j++)
-		for(i=0;i<outSizeW;i++)
-			for(r=0;r<mapSize.r;r++)
-				for(c=0;c<mapSize.c;c++){
-					outputData[j][i]=outputData[j][i]+map[r][c]*exInputData[j+r][i+c];
-				}
-
-	for(i=0;i<inSize.r+2*(mapSize.r-1);i++)
-		free(exInputData[i]);
-	free(exInputData);
-
-	nSize outSize={outSizeW,outSizeH};
-	switch(type){ // 根据不同的情况，返回不同的结果
-	case full: // 完全大小的情况
-		return outputData;
-	case same:{
-		float** sameres=matEdgeShrink(outputData,outSize,halfmapsizew,halfmapsizeh);
-		for(i=0;i<outSize.r;i++)
-			free(outputData[i]);
-		free(outputData);
-		return sameres;
-		}
-	case valid:{
-		float** validres;
-		if(mapSize.r%2==0&&mapSize.c%2==0)
-			validres=matEdgeShrink(outputData,outSize,halfmapsizew*2-1,halfmapsizeh*2-1);
-		else
-			validres=matEdgeShrink(outputData,outSize,halfmapsizew*2,halfmapsizeh*2);
-		for(i=0;i<outSize.r;i++)
-			free(outputData[i]);
-		free(outputData);
-		return validres;
-		}
-	default:
-		return outputData;
-	}
-}
-
-float** cov(float** map,nSize mapSize,float** inputData,nSize inSize,int type) // 卷积操作
-{
-	// 卷积操作可以用旋转180度的特征模板相关来求
-	float** flipmap=rotate180(map,mapSize); //旋转180度的特征模板
-	float** res=correlation(flipmap,mapSize,inputData,inSize,type);
-	int i;
-	for(i=0;i<mapSize.r;i++)
-		free(flipmap[i]);
-	free(flipmap);
-	return res;
-}
-
-// 这个是矩阵的上采样（等值内插），upc及upr是内插倍数
-float** UpSample(float** mat,nSize matSize,int upc,int upr)
-{ 
-	int i,j,m,n;
-	int c=matSize.c;
-	int r=matSize.r;
-	float** res=(float**)malloc((r*upr)*sizeof(float*)); // 结果的初始化
-	for(i=0;i<(r*upr);i++)
-		res[i]=(float*)malloc((c*upc)*sizeof(float));
-
-	for(j=0;j<r*upr;j=j+upr){
-		for(i=0;i<c*upc;i=i+upc)// 宽的扩充
-			for(m=0;m<upc;m++)
-				res[j][i+m]=mat[j/upr][i/upc];
-
-		for(n=1;n<upr;n++)      //  高的扩充
-			for(i=0;i<c*upc;i++)
-				res[j+n][i]=res[j][i];
-	}
-	return res;
-}
-
-// 给二维矩阵边缘扩大，增加addw大小的0值边
-float** matEdgeExpand(float** mat,nSize matSize,int addc,int addr)
-{ // 向量边缘扩大
+// 测试Mat模块是否工作正常
+void test_mat(){
 	int i,j;
-	int c=matSize.c;
-	int r=matSize.r;
-	float** res=(float**)malloc((r+2*addr)*sizeof(float*)); // 结果的初始化
-	for(i=0;i<(r+2*addr);i++)
-		res[i]=(float*)malloc((c+2*addc)*sizeof(float));
-
-	for(j=0;j<r+2*addr;j++){
-		for(i=0;i<c+2*addc;i++){
-			if(j<addr||i<addc||j>=(r+addr)||i>=(c+addc))
-				res[j][i]=(float)0.0;
-			else
-				res[j][i]=mat[j-addr][i-addc]; // 复制原向量的数据
+	nSize srcSize={6,6};
+	nSize mapSize={4,4};
+	srand((unsigned)time(NULL));
+	float** src=(float**)malloc(srcSize.r*sizeof(float*));
+	for(i=0;i<srcSize.r;i++){
+		src[i]=(float*)malloc(srcSize.c*sizeof(float));
+		for(j=0;j<srcSize.c;j++){
+			src[i][j]=(((float)rand()/(float)RAND_MAX)-0.5)*2; 
 		}
 	}
-	return res;
-}
-
-// 给二维矩阵边缘缩小，擦除shrinkc大小的边
-float** matEdgeShrink(float** mat,nSize matSize,int shrinkc,int shrinkr)
-{ // 向量的缩小，宽缩小addw，高缩小addh
-	int i,j;
-	int c=matSize.c;
-	int r=matSize.r;
-	float** res=(float**)malloc((r-2*shrinkr)*sizeof(float*)); // 结果矩阵的初始化
-	for(i=0;i<(r-2*shrinkr);i++)
-		res[i]=(float*)malloc((c-2*shrinkc)*sizeof(float));
-
-	
-	for(j=0;j<r;j++){
-		for(i=0;i<c;i++){
-			if(j>=shrinkr&&i>=shrinkc&&j<(r-shrinkr)&&i<(c-shrinkc))
-				res[j-shrinkr][i-shrinkc]=mat[j][i]; // 复制原向量的数据
+	float** map=(float**)malloc(mapSize.r*sizeof(float*));
+	for(i=0;i<mapSize.r;i++){
+		map[i]=(float*)malloc(mapSize.c*sizeof(float));
+		for(j=0;j<mapSize.c;j++){
+			map[i][j]=(((float)rand()/(float)RAND_MAX)-0.5)*2; 
 		}
 	}
-	return res;
+
+	nSize cov1size={srcSize.c+mapSize.c-1,srcSize.r+mapSize.r-1};
+	float** cov1=cov(map,mapSize,src,srcSize,full);
+	//nSize cov2size={srcSize.c,srcSize.r};
+	//float** cov2=cov(map,mapSize,src,srcSize,same);
+	nSize cov3size={srcSize.c-(mapSize.c-1),srcSize.r-(mapSize.r-1)};
+	float** cov3=cov(map,mapSize,src,srcSize,valid);
+
+	savemat(src,srcSize,"E:\\Code\\Matlab\\PicTrans\\src.ma");
+	savemat(map,mapSize,"E:\\Code\\Matlab\\PicTrans\\map.ma");
+	savemat(cov1,cov1size,"E:\\Code\\Matlab\\PicTrans\\cov1.ma");
+	//savemat(cov2,cov2size,"E:\\Code\\Matlab\\PicTrans\\cov2.ma");
+	savemat(cov3,cov3size,"E:\\Code\\Matlab\\PicTrans\\cov3.ma");
+
+	float** sample=UpSample(src,srcSize,2,2);
+	nSize samSize={srcSize.c*2,srcSize.r*2};
+	savemat(sample,samSize,"E:\\Code\\Matlab\\PicTrans\\sam.ma");
 }
 
-void savemat(float** mat,nSize matSize,const char* filename)
+void test_mat1()
 {
+	int i,j;
+	nSize srcSize={12,12};
+	nSize mapSize={5,5};
+	float** src=(float**)malloc(srcSize.r*sizeof(float*));
+	for(i=0;i<srcSize.r;i++){
+		src[i]=(float*)malloc(srcSize.c*sizeof(float));
+		for(j=0;j<srcSize.c;j++){
+			src[i][j]=(((float)rand()/(float)RAND_MAX)-0.5)*2; 
+		}
+	}
+	float** map1=(float**)malloc(mapSize.r*sizeof(float*));
+	for(i=0;i<mapSize.r;i++){
+		map1[i]=(float*)malloc(mapSize.c*sizeof(float));
+		for(j=0;j<mapSize.c;j++){
+			map1[i][j]=(((float)rand()/(float)RAND_MAX)-0.5)*2; 
+		}
+	}
+	float** map2=(float**)malloc(mapSize.r*sizeof(float*));
+	for(i=0;i<mapSize.r;i++){
+		map2[i]=(float*)malloc(mapSize.c*sizeof(float));
+		for(j=0;j<mapSize.c;j++){
+			map2[i][j]=(((float)rand()/(float)RAND_MAX)-0.5)*2; 
+		}
+	}
+	float** map3=(float**)malloc(mapSize.r*sizeof(float*));
+	for(i=0;i<mapSize.r;i++){
+		map3[i]=(float*)malloc(mapSize.c*sizeof(float));
+		for(j=0;j<mapSize.c;j++){
+			map3[i][j]=(((float)rand()/(float)RAND_MAX)-0.5)*2; 
+		}
+	}
+
+	float** cov1=cov(map1,mapSize,src,srcSize,valid);
+	float** cov2=cov(map2,mapSize,src,srcSize,valid);
+	nSize covsize={srcSize.c-(mapSize.c-1),srcSize.r-(mapSize.r-1)};
+	float** cov3=cov(map3,mapSize,src,srcSize,valid);
+	addmat(cov1,cov1,covsize,cov2,covsize);
+	addmat(cov1,cov1,covsize,cov3,covsize);
+
+
+	savemat(src,srcSize,"E:\\Code\\Matlab\\PicTrans\\src.ma");
+	savemat(map1,mapSize,"E:\\Code\\Matlab\\PicTrans\\map1.ma");
+	savemat(map2,mapSize,"E:\\Code\\Matlab\\PicTrans\\map2.ma");
+	savemat(map3,mapSize,"E:\\Code\\Matlab\\PicTrans\\map3.ma");
+	savemat(cov1,covsize,"E:\\Code\\Matlab\\PicTrans\\cov1.ma");
+	savemat(cov2,covsize,"E:\\Code\\Matlab\\PicTrans\\cov2.ma");
+	savemat(cov3,covsize,"E:\\Code\\Matlab\\PicTrans\\cov3.ma");
+
+}
+// 测试cnn模块是否工作正常
+void test_cnn()
+{
+
+	LabelArr testLabel=read_Lable("E:\\Code\\VS2010 code\\CNN\\Minst\\train-labels.idx1-ubyte");
+	ImgArr testImg=read_Img("E:\\Code\\VS2010 code\\CNN\\Minst\\train-images.idx3-ubyte");
+
+	nSize inputSize={testImg->ImgPtr[0].c,testImg->ImgPtr[0].r};
+	int outSize=testLabel->LabelPtr[0].l;
+
+	CNN* cnn=(CNN*)malloc(sizeof(CNN));
+	cnnsetup(cnn,inputSize,outSize);
+
+	CNNOpts opts;
+	opts.numepochs=1;
+	opts.alpha=1;
+	int trainNum=5000;
+	cnntrain(cnn,testImg,testLabel,opts,trainNum);
+
 	FILE  *fp=NULL;
-	fp=fopen(filename,"wb");
+	fp=fopen("E:\\Code\\Matlab\\PicTrans\\cnnL.ma","wb");
 	if(fp==NULL)
 		printf("write file failed\n");
-
-	int i;
-	for(i=0;i<matSize.r;i++)
-		fwrite(mat[i],sizeof(float),matSize.c,fp);
+	fwrite(cnn->L,sizeof(float),trainNum,fp);
 	fclose(fp);
 }
 
-void addmat(float** res, float** mat1, nSize matSize1, float** mat2, nSize matSize2)// 矩阵相加
-{
-	int i,j;
-	if(matSize1.c!=matSize2.c||matSize1.r!=matSize2.r)
-		printf("ERROR: Size is not same!");
 
-	for(i=0;i<matSize1.r;i++)
-		for(j=0;j<matSize1.c;j++)
-			res[i][j]=mat1[i][j]+mat2[i][j];
-}
-
-void multifactor(float** res, float** mat, nSize matSize, float factor)// 矩阵乘以系数
+/*主函数*/
+int main()
 {
-	int i,j;
-	for(i=0;i<matSize.r;i++)
-		for(j=0;j<matSize.c;j++)
-			res[i][j]=mat[i][j]*factor;
-}
+	// LabelArr trainLabel=read_Lable("./../Minst/train-labels-idx1-ubyte");
+	// ImgArr trainImg=read_Img("./../Minst/train-images-idx3-ubyte");
+	LabelArr testLabel=read_Lable("./../Minst/t10k-labels-idx1-ubyte");
+	ImgArr testImg=read_Img("./../Minst/t10k-images-idx3-ubyte");
 
-float summat(float** mat,nSize matSize) // 矩阵各元素的和
-{
-	float sum=0.0;
-	int i,j;
-	for(i=0;i<matSize.r;i++)
-		for(j=0;j<matSize.c;j++)
-			sum=sum+mat[i][j];
-	return sum;
+	nSize inputSize={testImg->ImgPtr[0].c,testImg->ImgPtr[0].r};
+	int outSize=testLabel->LabelPtr[0].l;
+
+	// CNN结构的初始化
+	CNN* cnn=(CNN*)malloc(sizeof(CNN));
+	cnnsetup(cnn,inputSize,outSize);
+
+
+	// CNN测试
+	importcnn(cnn,"minst.cnn");
+	// int testNum=10000;
+	int testNum=1;
+	float incorrectRatio=0.0;
+	incorrectRatio=cnntest(cnn,testImg,testLabel,testNum);
+	printf("incorrectRatio=%f\ntest finished!!\n",incorrectRatio);
+
+	return 0;
 }

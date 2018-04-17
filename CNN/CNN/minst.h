@@ -4,13 +4,6 @@
 MINST数据库是一个手写图像数据库，里面
 */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <math.h>
-//#include <random>
-#include <time.h>
-
 typedef struct MinstImg{
 	long s;           // 图像宽 和 高 [0, 0, c, r]
 	long** ImgData;   // 图像数据二维动态数组
@@ -22,12 +15,12 @@ typedef struct MinstImgArr{
 }*ImgArr;               // 存储图像数据的数组
 
 typedef struct MinstLabel{
-	long l;            // 输出标记的长 [0, 0, 0, l]
-	long* LabelData;   // 输出标记数据
+	int l;            // 输出标记的长 [0, 0, 0, l]
+	float* LabelData;   // 输出标记数据
 }MinstLabel;
 
 typedef struct MinstLabelArr{
-	long LabelNum;       // [0, 0, 0, n]
+	int LabelNum;
 	MinstLabel* LabelPtr;
 }*LabelArr;              // 存储图像标记的数组
 
